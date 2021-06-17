@@ -34,7 +34,7 @@ public class ZipHandler implements IHandler {
                     System.out.printf("Unknown type: first char is %c and the second char is %c", first, second);
                     return;
                 }
-                zipFind(file, s, new ZipInputStream(inputStream));
+                zipFind(file.toAbsolutePath().toString(), s, new ZipInputStream(inputStream));
                 inputStream.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -42,18 +42,18 @@ public class ZipHandler implements IHandler {
         }
     }
 
-    private void zipFind(Path file, String s, ZipInputStream zi) throws IOException {
+    private void zipFind(String path, String s, ZipInputStream zi) throws IOException {
         ZipEntry zipEntry = null;
         while ((zipEntry = zi.getNextEntry()) != null) {
             BoundedInputStream boundedInputStream = new BoundedInputStream(zi, zipEntry.getSize());
             if (zipEntry.getName().endsWith(".jar") || zipEntry.getName().endsWith(".war") || zipEntry.getName().endsWith(".zip") || zipEntry.getName().endsWith(".ear")) {
                 byte[] byteArray = IOUtils.toByteArray(boundedInputStream);
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-                zipFind(file, s, new ZipInputStream(byteArrayInputStream));
+                zipFind(path + "$" + zipEntry.getName(), s, new ZipInputStream(byteArrayInputStream));
                 byteArrayInputStream.close();
             } else {
                 if (find(s, boundedInputStream)) {
-                    System.out.printf("%s contains %s%n", file.toAbsolutePath(), s);
+                    System.out.printf("%s contains %s%n", path + "$" + zipEntry.getName(), s);
                     return;
                 }
             }

@@ -1,12 +1,12 @@
 package com.damonyuan.deepfinder;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
 public interface IHandler {
     void handle(Path file, String[] stringsToFind);
+
     default boolean find(String s, InputStream stream) {
         try {
             char[] needle = s.toCharArray();
